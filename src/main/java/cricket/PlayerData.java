@@ -45,9 +45,19 @@ public class PlayerData {
         return players;
     }
 
+    public static List<Player> getAllPlayer(){
+        List<Player> players = database.getAllPlayers();
+        return players;
+    }
+
     public static List<Team> getAllTeam(){
         List<Team> teams = database.getAllTeams();
         return teams;
+    }
+
+    public static Player getPlayerInfo(int teamID, String name){
+        Player newPlayer = database.getPlayerInfo(teamID,name);
+        return newPlayer;
     }
 
     public static void addTeam(){

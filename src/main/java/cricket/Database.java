@@ -70,6 +70,29 @@ public class Database {
         }
     }
 
+    public List<Player> getAllPlayers() {
+
+        try (Connection connection = DriverManager.getConnection(databasePath);
+             Statement statement = connection.createStatement()){
+            //preparedStatement.setInt(1,teamID);
+            //statement.execute("SELECT * FROM Player ORDER BY PlayerFirstName");
+            ResultSet playerResult = statement.executeQuery("SELECT * FROM Player ORDER BY PlayerFirstName"); ;
+            List<Player> allPlayerList = new ArrayList<>();
+            while (playerResult.next()) {
+                int PlayerID = playerResult.getInt("PlayerID");
+                String PlayerFirstName = playerResult.getString("PlayerFirstName");
+                String PlayerLastName = playerResult.getString("PlayerLastName");
+                int TeamID = playerResult.getInt("TeamID");
+                Player player = new Player(PlayerID, PlayerFirstName, PlayerLastName, TeamID);
+                allPlayerList.add(player);
+            }
+            return allPlayerList;
+        } catch (SQLException e) {
+            System.out.println("Error getting all players " + e);
+            return null;
+        }
+    }
+
     public List<Team> getAllTeams(){
 
         // Connect to database and get the list of teams
@@ -167,6 +190,33 @@ public class Database {
         }catch (SQLException e){
             System.out.println("Error getting Team ID because " + e);
             return 0;
+        }
+    }
+
+    // getting player data -- ideally have to look for Score table
+    public Player getPlayerInfo(int teamID, String fullName){
+
+        String playerInfoSQL = "SELECT * FROM Player WHERE TeamID = ? AND PlayerFirstName = ? AND PlayerLastName = ?";
+        try(Connection connection = DriverManager.getConnection(databasePath);
+        PreparedStatement preparedStatement = connection.prepareStatement(playerInfoSQL)) {
+            preparedStatement.setInt(1,teamID);
+            String name[] = fullName.split(" ");
+            preparedStatement.setString(2, name[0]);
+            preparedStatement.setString(3, name[1]);
+            Player newPlayer = new Player(1,"Tenzin","Minleg",1);
+            ResultSet playerResultSet = preparedStatement.executeQuery();
+            while(playerResultSet.next()){
+                int playerID = playerResultSet.getInt("PlayerID");
+                String playerFirstName = playerResultSet.getString("PlayerFirstName");
+                String playerLastName = playerResultSet.getString("PlayerLastName");
+                int ID = playerResultSet.getInt("TeamID");
+                newPlayer = new Player(playerID,playerFirstName,playerLastName,ID);
+
+            }
+            return newPlayer;
+        }catch(SQLException e){
+            System.out.println("Error getting Player information because " + e);
+            return null;
         }
     }
 }
